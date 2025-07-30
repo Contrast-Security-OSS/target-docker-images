@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        image: [centos7, linux-arm64, alpine]
+        image: [almalinux-devtoolset11, linux-arm64, alpine]
     name: Building ${{ matrix.image }} binaries
     runs-on: ubuntu-latest
 
