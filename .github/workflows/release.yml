@@ -6,6 +6,9 @@ name: Release
 on:
   push:
     tags: ['v[0-9]+.[0-9]+.[0-9]+']
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build
@@ -28,10 +31,15 @@ jobs:
           # - linux-arm64-musl
           - almalinux-devtoolset11
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@a5ad31d6a139d249332a2605b85202e8c0b78450 # v2.19.1
+        with:
+          egress-policy: audit
+
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Login
-        uses: docker/login-action@v3
+        uses: step-security/docker-login-action@870af644803bf9f204aed474adbad2958fec048b # v4.1.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -42,7 +50,7 @@ jobs:
           echo "MINOR=$(echo ${GITHUB_REF/refs\/tags\/v/} | awk -F '.' '{print $1"."$2}')" >> $GITHUB_ENV
           echo "PATCH=$(echo ${GITHUB_REF/refs\/tags\/v/} | awk -F '.' '{print $1"."$2"."$3}')" >> $GITHUB_ENV
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: step-security/docker-build-push-action@846549baaf047e867d038826129a64d81df0f704 # v7.1.0
         with:
           context: ${{ matrix.image }}
           tags: |
@@ -63,9 +71,14 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@a5ad31d6a139d249332a2605b85202e8c0b78450 # v2.19.1
+        with:
+          egress-policy: audit
+
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Create GitHub release
-        uses: docker://antonyurchenko/git-release:v4
+        uses: docker://antonyurchenko/git-release:v4@sha256:3ef7924f2d5b072106d947d8607d18ad88c979b8543b6b98a8bf1149fcfd4297
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

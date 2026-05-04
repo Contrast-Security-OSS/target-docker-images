@@ -1,4 +1,4 @@
-FROM almalinux:8-minimal
+FROM almalinux:8-minimal@sha256:4b5cdd1ff6744c7478831c76e3bc9c6ad0184aeac36656c94a87bcd52c4593f1
 
 USER 0
 
